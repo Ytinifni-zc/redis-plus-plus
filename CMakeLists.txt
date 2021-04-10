@@ -5,8 +5,12 @@ project(redis++)
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -W -Werror -fPIC")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
+# TODO: TLS
 set(_THIS_DIR ${PROJECT_SOURCE_DIR}) # PROJECT_SOURCE_DIR is changed later
-set(REDIS_PLUS_PLUS_HEADER ${_THIS_DIR}/src)
+list(APPEND REDIS_PLUS_PLUS_HEADER
+        ${_THIS_DIR}/src
+        ${_THIS_DIR}/src/sw/redis++/no_tls
+        )
 
 # hiredis dependency
 option(REDIS_PLUS_PLUS_BUILD_HIREDIS_FROM_SUBMODULE "Build hiredis dependency from submodule instead of system" ON)
@@ -20,13 +24,14 @@ else ()
     find_path(HIREDIS_HEADER hiredis)
     find_library(HIREDIS_LIB hiredis)
 endif ()
+message("HIREDIS_HEADER ${HIREDIS_HEADER}")
 
 # redis-plus-plus
 set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/sw/redis++)
 file(GLOB PROJECT_SOURCE_FILES "${PROJECT_SOURCE_DIR}/*.cpp")
 
-set(STATIC_LIB redis-plus-plus-static)
-set(SHARED_LIB redis-plus-plus-shared)
+set(STATIC_LIB redis++_static)
+set(SHARED_LIB redis++)
 
 add_library(${STATIC_LIB} STATIC ${PROJECT_SOURCE_FILES})
 add_library(${SHARED_LIB} SHARED ${PROJECT_SOURCE_FILES})
